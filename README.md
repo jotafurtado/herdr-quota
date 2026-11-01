@@ -1,13 +1,26 @@
-# Agent quota and system load for Herdr
+# Herdr Quota
+
+An independently maintained continuation of [Lakris2407's original Herdr Quota](https://github.com/Lakris2407/herdr-quota),
+maintained by [jotafurtado](https://github.com/jotafurtado). The focus is model and provider quotas:
+usage limits, reset times and display preferences in a compact Herdr mod.
+
+The original author consolidated their mods into [herdr-mods](https://github.com/Lakris2407/herdr-mods).
+This fork follows its own direction and is not the official continuation of that collection.
+Original authorship, contributor history and license notices remain intact.
+See [Maintenance](MAINTENANCE.md), [Credits](CREDITS.md) and [sharing on Herdr Mods](PUBLISHING.md).
 
 Your coding agents' usage limits in the [Herdr](https://herdr.dev) status bar: one slim bar per
 limit, so Claude's 5-hour and weekly limits show side by side. Quiet until it matters: bars turn
 amber at 60%, orange at 80% and red at 92%. Click it for details and options.
 
-Optional second mod: live CPU, RAM and GPU load beside it, so you do not need Activity Monitor
-to see what your agents do to your Mac. See [System load](#system-load-optional-second-mod).
+The repository also retains the original optional macOS system-load mod for existing users.
+It is not required for quota tracking and is outside the primary maintenance focus.
+See [System load](#system-load-optional-second-mod).
 
-![System load and agent quota in the Herdr status bar](preview-bar.png)
+The screenshot below shows the original optional system-load integration on macOS, not the
+default quota-only setup or Windows support.
+
+![Original macOS system-load and quota integration](preview-bar.png)
 
 ![Agent quota popup](preview.png)
 
@@ -57,7 +70,7 @@ to see what your agents do to your Mac. See [System load](#system-load-optional-
 
 4. Check it: `herdr-app check ~/.config/herdr-app/mods/quota`.
 
-Or ask the agent running in Herdr: "add the herdr.dev mod Lakris2407/herdr-quota".
+Or ask the agent running in Herdr: "install the quota mod from https://github.com/jotafurtado/herdr-quota".
 
 ## Options
 
@@ -98,10 +111,14 @@ Install: copy `mods/system` to `~/.config/herdr-app/mods/system` and add a block
 
 ## Credits
 
+- Original mod, recipe and screenshots: [Lakris2407](https://github.com/Lakris2407/herdr-quota).
+- Independent maintenance: [jotafurtado](https://github.com/jotafurtado/herdr-quota).
 - Quota data: [quota-axi](https://github.com/kunchenguid/quota-axi) by kunchenguid (MIT).
 - Provider icons: the ones Herdr ships in `~/.config/herdr-app/icons`; this repo includes none.
 - Built on the [Herdr](https://github.com/herdrdev/herdr-app) mod API.
 
+See [CREDITS.md](CREDITS.md) for attribution and third-party licensing boundaries.
+
 ## License
 
-MIT
+MIT, see [LICENSE](LICENSE). The original copyright notice is preserved.
