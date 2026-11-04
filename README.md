@@ -1,132 +1,72 @@
 # Agent Quota
 
-An independently maintained continuation of [Lakris2407's original Herdr Quota](https://github.com/Lakris2407/herdr-quota),
-maintained by [jotafurtado](https://github.com/jotafurtado). The focus is model and provider quotas:
-usage limits, reset times and display preferences in a compact Herdr mod.
+See your AI quota usage and reset times inside [Herdr](https://herdr.dev).
+Agent Quota adds a compact status strip and a popup with two tabs: **Usage** for your limits,
+and **Display** for choosing what appears. Quota data comes from
+[quota-axi](https://github.com/kunchenguid/quota-axi), using the provider accounts already
+authenticated on your computer.
 
-The original author consolidated their mods into [herdr-mods](https://github.com/Lakris2407/herdr-mods).
-This fork follows its own direction and is not the official continuation of that collection.
-Original authorship, contributor history and license notices remain intact.
-See [Maintenance](MAINTENANCE.md), [Credits](CREDITS.md) and [sharing on Herdr Mods](PUBLISHING.md).
+![Agent Quota: status strip with progress bars, followed by Usage and Display](preview.png)
 
-Your coding agents' usage limits in the [Herdr](https://herdr.dev) status bar: one slim bar per
-limit, so Claude's 5-hour and weekly limits show side by side. Quiet until it matters: bars turn
-amber at 60%, orange at 80% and red at 92%. Click it for details and options.
-
-The repository also retains the original optional macOS system-load mod for existing users.
-It is not required for quota tracking and is outside the primary maintenance focus.
-See [System load](#system-load-optional-second-mod).
-
-The screenshot below shows the original optional system-load integration on macOS, not the
-default quota-only setup or Windows support.
-
-![Original macOS system-load and quota integration](preview-bar.png)
-
-![Agent Quota popup](preview.png)
-
-- **Every limit at a glance:** Claude 5-hour and weekly, Codex weekly, and any other provider
-  [`quota-axi`](https://github.com/kunchenguid/quota-axi) knows (Cursor, GitHub Copilot, Grok, Kimi).
-- **Pace:** a thin tick on each bar marks how much of the window has passed. A small ▲ means you
-  are using it faster than the clock.
-- **Popup:** reset times, "ahead of pace" or "under pace", and options for what the bar shows:
-  5-hour, weekly, monthly and per-model limits, each provider, signed-out providers, names.
-- Follows your Herdr theme, light and dark.
-
-## Requirements
-
-- The Herdr desktop app (`herdr-app`).
-- [`quota-axi`](https://github.com/kunchenguid/quota-axi) by
-  [kunchenguid](https://github.com/kunchenguid), which reads the quota:
-
-  ```sh
-  npm install -g quota-axi
-  quota-axi            # check that it sees your providers
-  ```
+These are native Herdr captures of the current mod, using illustrative quota data in an isolated
+preview layout. They contain no terminal content or account identifiers. Values and plans are examples.
 
 ## Install
 
-1. Copy `mods/quota` to `~/.config/herdr-app/mods/quota`.
-2. Herdr's own layouts are read-only, so clone one and put the quota block in its status bar.
-   Clone `main` (this switches to the clone):
+Tell your agent:
 
-   ```sh
-   herdr-app do layout.clone '{"name":"main","as":"main-plus"}'
-   ```
-
-3. In `~/.config/herdr-app/layouts/main-plus.json`, replace the status block
-
-   ```json
-   { "id": "status", "type": "block", "content": { "mod": "workspace-status" }, "size": { "px": 28 } }
-   ```
-
-   with a row that holds both:
-
-   ```json
-   { "id": "status", "type": "row", "size": { "px": 28 }, "resizable": false, "children": [
-     { "id": "status-main", "type": "block", "content": { "mod": "workspace-status" }, "size": { "weight": 1 } },
-     { "id": "status-quota", "type": "block", "content": { "mod": "quota" }, "size": { "px": 360 } }
-   ] }
-   ```
-
-4. Check it: `herdr-app check ~/.config/herdr-app/mods/quota`.
-
-Or ask the agent running in Herdr: "install the quota mod from https://github.com/jotafurtado/herdr-quota".
-
-## Options
-
-Click or right-click the bar to choose what it shows; choices are saved. A layout can set the
-starting options with `props`, for example to hide a provider:
-
-```json
-"content": { "mod": "quota", "props": { "hidden": ["cursor"] } }
+```text
+Read ~/.config/herdr-app/AGENTS.md, then add this mod: https://github.com/jotafurtado/herdr-quota
 ```
 
-`props` takes `hidden` (provider ids), `kinds` (`{ "session": true, "weekly": true, "monthly": true, "model": false }`),
-`signedOut`, `names` and `percentageOnly` (default `false`).
+## What it shows
 
-Enable **Percentages only (no bars)** in the popup to hide progress bars in both the status
-strip and the popup. Percentages, limit labels, warning colors and reset times remain visible.
-The choice is saved with the other display preferences. A layout can start in this mode with
-`"percentageOnly": true` in the quota block's `props`; saved choices take precedence.
+- **Usage per limit**, not one combined percentage for an entire provider. Session, weekly,
+  monthly and model-specific limits can appear separately when quota-axi reports them.
+- **Reset countdowns** for limits with a future reset time.
+- **Provider and plan names** when available. Claude, Codex, Antigravity and other supported
+  providers appear according to the data returned by quota-axi.
+- **Usage colors**: green below 60%, amber from 60%, orange from 80% and red from 92%.
+- **Pace hints in the status strip**: a tick marks elapsed time when the limit includes a
+  duration, and a small triangle warns when consumption is ahead of that pace.
 
-Compact limit labels use `5h` and `7d`. Monthly limits show `30d` only when the provider reports
-a 30-day window; otherwise they show `mês` rather than assuming a fixed duration.
+Percentages mean **quota used**. The mod displays the provider's reported windows; it cannot
+create a per-model breakdown when the provider only reports a shared allowance. Available
+providers and limits depend on quota-axi and your local sign-ins.
 
-Keys: bind `quota:menu` (open the popup) and `quota:refresh` (read now) in `keys.json`.
+## Usage and Display
 
-## What it runs
+Click or right-click the status strip to open the popup.
 
-The mod runs `quota-axi --json` every 2 minutes, and when you click Refresh. If Herdr cannot find
-it on its own `PATH` (common when Herdr starts from the Dock), it asks your login shell
-(`$SHELL -lic`). The mod itself makes no network requests and stores no tokens; `quota-axi` reads
-your local Claude, Codex and other CLI sign-ins to ask each provider for your usage.
+**Usage** groups available limits by provider, with percentages and reset countdowns.
+Providers hidden from the strip remain accessible under **Other providers**.
 
-## System load (optional second mod)
+**Display** lets you:
 
-`mods/system` shows CPU, memory and GPU load next to the quota: a small live graph of the last
-36 seconds and the percent for each, in the same green, amber, orange and red scale. Hover for
-details (user and system CPU, GB of memory used); click to open Activity Monitor. macOS only.
+- Show or hide each provider in the strip.
+- Select session, weekly, monthly and model-specific limit types for the strip.
+- Hide Antigravity's Claude/GPT limits independently of its Gemini limits.
+- Show provider names or signed-out providers in the strip.
+- Enable **Percentages only (no bars)** in both the strip and popup.
 
-It reads `iostat`, `vm_stat`, `sysctl` and `ioreg` every 3 seconds; none need root. Memory is
-Activity Monitor's "Memory Used" (app memory, wired and compressed).
+Preferences apply immediately and persist across restarts. The strip uses compact labels such
+as `5h` and `7d`. A monthly window is labeled `30d` only when its reported duration is exactly
+30 days; otherwise it uses `mês`.
 
-Install: copy `mods/system` to `~/.config/herdr-app/mods/system` and add a block before
-`status-quota` in the status row:
+## Refresh and preferences
 
-```json
-{ "id": "status-system", "type": "block", "content": { "mod": "system" }, "size": { "px": 330 } }
-```
+Quotas refresh automatically every two minutes. Select **Refresh** to update them immediately.
+Your display preferences are saved locally and retained across restarts.
 
-## Credits
+If a provider is missing, check the filters in Display. Your agent can check the dependency
+and provider sign-ins when needed. Agent Quota reuses existing sign-ins and does not save access tokens.
 
-- Original mod, recipe and screenshots: [Lakris2407](https://github.com/Lakris2407/herdr-quota).
-- Independent maintenance: [jotafurtado](https://github.com/jotafurtado/herdr-quota).
-- Quota data: [quota-axi](https://github.com/kunchenguid/quota-axi) by kunchenguid (MIT).
-- Provider icons: the ones Herdr ships in `~/.config/herdr-app/icons`; this repo includes none.
-- Built on the [Herdr](https://github.com/herdrdev/herdr-app) mod API.
+## Credits and license
 
-See [CREDITS.md](CREDITS.md) for attribution and third-party licensing boundaries.
+Independently maintained by [jotafurtado](https://github.com/jotafurtado), based on
+[Lakris2407's original mod](https://github.com/Lakris2407/herdr-quota). Quota data is supplied by
+[quota-axi](https://github.com/kunchenguid/quota-axi), by kunchenguid. Herdr supplies its mod API
+and installed provider icons; additional bundled provider icons retain the LobeHub MIT notice.
 
-## License
-
-MIT, see [LICENSE](LICENSE). The original copyright notice is preserved.
+MIT, with the original copyright preserved. See [LICENSE](LICENSE), [CREDITS.md](CREDITS.md),
+[maintenance direction](MAINTENANCE.md) and [publishing on Herdr Mods](PUBLISHING.md).
