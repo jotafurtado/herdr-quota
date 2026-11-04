@@ -1,4 +1,4 @@
-# Herdr Quota
+# Agent Quota
 
 An independently maintained continuation of [Lakris2407's original Herdr Quota](https://github.com/Lakris2407/herdr-quota),
 maintained by [jotafurtado](https://github.com/jotafurtado). The focus is model and provider quotas:
@@ -22,7 +22,7 @@ default quota-only setup or Windows support.
 
 ![Original macOS system-load and quota integration](preview-bar.png)
 
-![Agent quota popup](preview.png)
+![Agent Quota popup](preview.png)
 
 - **Every limit at a glance:** Claude 5-hour and weekly, Codex weekly, and any other provider
   [`quota-axi`](https://github.com/kunchenguid/quota-axi) knows (Cursor, GitHub Copilot, Grok, Kimi).
@@ -82,7 +82,15 @@ starting options with `props`, for example to hide a provider:
 ```
 
 `props` takes `hidden` (provider ids), `kinds` (`{ "session": true, "weekly": true, "monthly": true, "model": false }`),
-`signedOut` and `names`.
+`signedOut`, `names` and `percentageOnly` (default `false`).
+
+Enable **Percentages only (no bars)** in the popup to hide progress bars in both the status
+strip and the popup. Percentages, limit labels, warning colors and reset times remain visible.
+The choice is saved with the other display preferences. A layout can start in this mode with
+`"percentageOnly": true` in the quota block's `props`; saved choices take precedence.
+
+Compact limit labels use `5h` and `7d`. Monthly limits show `30d` only when the provider reports
+a 30-day window; otherwise they show `mês` rather than assuming a fixed duration.
 
 Keys: bind `quota:menu` (open the popup) and `quota:refresh` (read now) in `keys.json`.
 

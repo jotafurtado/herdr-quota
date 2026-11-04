@@ -1,11 +1,11 @@
-# Agent quota
+# Agent Quota
 
 A slim strip at the right end of the status bar that shows each coding agent's usage limits as
 small bars: Claude's 5-hour and weekly limits side by side, Codex's weekly limit, and any other
 provider `quota-axi` reports. It stays grey and green until a limit gets high. A click opens a
 popup with reset times, pace and options.
 
-![Agent quota](preview.png)
+![Agent Quota](preview.png)
 
 ## What you see
 
@@ -21,12 +21,12 @@ popup with reset times, pace and options.
   `#c98a0b`, from 80% `#f59152` / `#dd6b20`, from 92% `#f2665c` / `#d64545`.
 - **Pace tick:** a 1 px line, `foreground` at 45% opacity, 2 px taller than the track on each
   side, at the share of the window that has passed.
-- **Popup** (300 px wide, `popover`): "Agent quota · updated Nm ago" and a Refresh link; per
+- **Popup** (300 px wide, `popover`): "Agent Quota · updated Nm ago" and a Refresh link; per
   provider its icon, name in semibold and plan in `dim`; per limit a 62 px label ("5 hours",
   "Week", or the limit's label), a 120×5 px bar, the percent, and below it "resets in 2h 52m ·
   39% under pace". A divider, then "Show in the status bar" with checkboxes (14 px, filled with
   the green level color when on): 5-hour limit, Weekly limit, Monthly limit, Model limits, one
-  per provider, Signed-out providers, Provider names.
+  per provider, Signed-out providers, Percentages only (no bars), Provider names.
 
 ## How it behaves
 
@@ -38,9 +38,16 @@ popup with reset times, pace and options.
 - Click or right-click the strip, or the `quota:menu` key command, opens the popup at the pointer.
   Checkbox clicks apply at once and keep the popup open; Esc or a click outside closes it.
 - Defaults: 5-hour, weekly and monthly limits on, model limits off, signed-out providers and
-  names off. Layout `props` (`hidden`, `kinds`, `signedOut`, `names`) set the start; popup
+  names off, percentage-only mode off. Layout `props` (`hidden`, `kinds`, `signedOut`, `names`,
+  `percentageOnly`) set the start; popup
   choices are saved in shared state `quota.options` and win.
 - No agent status colors are used; it does not depend on agents running.
+- Compact labels use `7d` for weekly limits and `30d` for monthly limits only when
+  `windowSeconds` is exactly 2592000. Other monthly limits use `mês`. When a provider has
+  multiple windows of one kind, retain the first word of each window label before the period.
+- The saved `percentageOnly` option hides bars and their pace ticks in both the strip and popup.
+  Keep percentages, limit labels, colors, pace warnings and reset times. The checkbox applies
+  immediately and can restore bars without changing cached quota data or other preferences.
 
 ## Built from
 

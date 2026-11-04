@@ -56,6 +56,6 @@ maintenance and should be a separate decision if the catalog requires it.
 
 ## Description for a future listing
 
-Herdr Quota is an independently maintained fork focused on model and provider quotas, usage
+Agent Quota is an independently maintained fork focused on model and provider quotas, usage
 limits and reset times in Herdr. Based on Lakris2407's original mod, with quota data supplied
 by quota-axi. See the README for the features and platform support available in this version.

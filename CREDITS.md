@@ -6,7 +6,7 @@ The original Herdr Quota mod, its recipe and the screenshots retained in this re
 created by [Lakris2407](https://github.com/Lakris2407/herdr-quota).
 Their current collection is [Lakris2407/herdr-mods](https://github.com/Lakris2407/herdr-mods).
 
-This repository is an independently maintained fork by
+Agent Quota is an independently maintained fork by
 [jotafurtado](https://github.com/jotafurtado/herdr-quota).
 The Git history records the authors and coauthors of individual contributions and is retained.
 Independent maintenance does not replace or transfer the original authorship.

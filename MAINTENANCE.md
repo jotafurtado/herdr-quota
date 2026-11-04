@@ -4,7 +4,7 @@ Decision recorded on 2026-11-01.
 
 ## Direction
 
-[jotafurtado/herdr-quota](https://github.com/jotafurtado/herdr-quota) is maintained independently
+Agent Quota ([jotafurtado/herdr-quota](https://github.com/jotafurtado/herdr-quota)) is maintained independently
 by jotafurtado as a focused quota mod for Herdr.
 
 The original author moved development into [Lakris2407/herdr-mods](https://github.com/Lakris2407/herdr-mods),

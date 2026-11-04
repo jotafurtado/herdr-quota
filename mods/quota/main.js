@@ -1,11 +1,11 @@
-// Agent quota in the status bar: one slim bar per limit window, from `quota-axi --json`.
+// Agent Quota in the status bar: one slim bar per limit window, from `quota-axi --json`.
 // Click it for details and options. The same mod draws the popup (props().menu).
 import { View, div, svg, image } from "gpui-kit";
 import { h_flex, v_flex } from "gpui-base";
 import { exec, theme, settings, shared, setShared, props, openOverlay, knownAgents, nextCommand } from "herdr";
 
 const EVERY = 120000, STALE = 10 * 60000;
-const DEFAULTS = { kinds: { session: true, weekly: true, monthly: true, model: false }, hidden: [], signedOut: false, names: false };
+const DEFAULTS = { kinds: { session: true, weekly: true, monthly: true, model: false }, hidden: [], signedOut: false, names: false, percentageOnly: false };
 const ICONS = { claude: "claude", codex: "codex", grok: "grok", kimi: "kimi", copilot: "copilot", cursor: "cursor" };
 const TINT = { claude: "#d97757", kimi: "#1783ff", copilot: "#8f6bf2" };
 const KINDS = [["session", "5-hour limit"], ["weekly", "Weekly limit"], ["monthly", "Monthly limit"], ["model", "Model limits"]];
@@ -27,11 +27,12 @@ function level(pct) {
 
 // Two windows of one kind (Cursor's monthly ones) are told apart by their own label.
 function short(w, twin) {
-  if (twin) return (w.label ?? w.kind).split(" ")[0].slice(0, 6);
-  if (w.kind === "session") return w.windowSeconds ? `${Math.round(w.windowSeconds / 3600)}h` : "5h";
-  if (w.kind === "weekly") return "wk";
-  if (w.kind === "monthly") return "mo";
-  return (w.label ?? "model").split(" ")[0].slice(0, 6);
+  let period;
+  if (w.kind === "session") period = w.windowSeconds ? `${Math.round(w.windowSeconds / 3600)}h` : "5h";
+  else if (w.kind === "weekly") period = "7d";
+  else if (w.kind === "monthly") period = w.windowSeconds === 30 * 86400 ? "30d" : "mês";
+  else return (w.label ?? "model").split(" ")[0].slice(0, 6);
+  return twin ? `${(w.label ?? w.kind).split(" ")[0]} ${period}` : period;
 }
 
 // Share of the window already gone, 0..1; null without a reset time.
@@ -130,7 +131,7 @@ export default class Quota extends View {
     const data = shared("quota.data"), o = options();
     const all = data?.providers ?? [], shown = all.filter(p => !o.hidden.includes(p.id) && (signedIn(p) || o.signedOut));
     const details = shown.reduce((n, p) => n + 30 + p.windows.length * 42, 0);
-    const toggles = (KINDS.length + all.length + 2) * 28;
+    const toggles = (KINDS.length + all.length + 3) * 28;
     openOverlay({ mod: "quota", kind: "popup", width: 300, height: Math.min(720, 44 + details + 40 + toggles + 12), props: { menu: true, start: props() ?? {} } });
   }
 
@@ -156,7 +157,7 @@ export default class Quota extends View {
           const pc = pace(w, now);
           return h_flex().gap(5).items_center()
             .child(div().text_size(10).text_color(t.dim).child(short(w, windows.filter(x => x.kind === w.kind).length > 1)))
-            .child(bar(w, 34, 4, now, t))
+            .when(!o.percentageOnly, el => el.child(bar(w, 34, 4, now, t)))
             .child(div().min_w(24).text_size(11).text_color(w.percentUsed >= 60 ? level(w.percentUsed) : t.muted).child(`${Math.round(w.percentUsed)}%`))
             .when(Boolean(pc?.ahead), el => el.child(div().ml(-3).text_size(8).text_color(level(Math.max(60, w.percentUsed))).child("▲")));
         })));
@@ -189,7 +190,7 @@ export default class Quota extends View {
         return v_flex().gap(3)
           .child(h_flex().gap(8).items_center()
             .child(div().w(62).flex_none().truncate().text_size(11.5).text_color(t.muted).child(w.kind === "session" ? "5 hours" : w.kind === "weekly" ? "Week" : w.label))
-            .child(bar(w, 120, 5, now, t))
+            .when(!o.percentageOnly, el => el.child(bar(w, 120, 5, now, t)))
             .child(div().flex_1().text_right().text_size(11.5).text_color(w.percentUsed >= 60 ? level(w.percentUsed) : t.foreground).child(`${Math.round(w.percentUsed)}%`)))
           .child(div().pl(70).text_size(10.5).text_color(t.dim).child([
             w.resetsAt && Date.parse(w.resetsAt) > now ? `resets in ${until(w.resetsAt, now)}` : null,
@@ -198,7 +199,7 @@ export default class Quota extends View {
       })));
     return v_flex().id("quota-menu").w_full().p(5).bg(t.popover).text_size(12.5).overflow_y_scrollbar()
       .child(h_flex().px(8).pt(4).pb(2).items_center()
-        .child(div().flex_1().text_size(11).text_color(t.dim).child(data ? `Agent quota · updated ${ago(data.at, now)}` : "Agent quota"))
+        .child(div().flex_1().text_size(11).text_color(t.dim).child(data ? `Agent Quota · updated ${ago(data.at, now)}` : "Agent Quota"))
         .child(div().id("quota-refresh").px(6).rounded(5).cursor_pointer().text_size(11).text_color(t.muted).hover(s => s.bg(t.hover))
           .on_click(() => setShared("quota.refresh", Date.now())).child("Refresh")))
       .when(Boolean(error), el => el.child(div().px(8).py(4).text_size(11).text_color(level(95)).child(error)))
@@ -209,6 +210,7 @@ export default class Quota extends View {
       .children(all.map(p => toggle(p.label, !o.hidden.includes(p.id),
         () => setOptions({ hidden: o.hidden.includes(p.id) ? o.hidden.filter(x => x !== p.id) : [...o.hidden, p.id] }), `prov-${p.id}`)))
       .child(toggle("Signed-out providers", o.signedOut, () => setOptions({ signedOut: !o.signedOut }), "signed-out"))
+      .child(toggle("Percentages only (no bars)", o.percentageOnly, () => setOptions({ percentageOnly: !o.percentageOnly }), "percentage-only"))
       .child(toggle("Provider names", o.names, () => setOptions({ names: !o.names }), "names"));
   }
 }
