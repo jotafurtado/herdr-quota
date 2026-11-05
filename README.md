@@ -58,7 +58,8 @@ as `5h` and `7d`. A monthly window is labeled `30d` only when its reported durat
 Quotas refresh automatically every two minutes. Select **Refresh** to update them immediately.
 Your display preferences are saved locally and retained across restarts.
 
-If a provider is missing, check the filters in Display. Your agent can check the dependency
+If a provider is missing, check the filters in Display. On macOS, Claude's sign-in is read from the
+Keychain: approve the prompt with **Always Allow** if it appears. Your agent can check the dependency
 and provider sign-ins when needed. Agent Quota reuses existing sign-ins and does not save access tokens.
 
 ## Credits and license

@@ -6,7 +6,7 @@ test("native executable success does not invoke a shell", async () => {
   const calls = [];
   const result = { code: 0, stdout: '{"providers":[]}' };
   assert.equal(await runQuotaCommand(async (...args) => { calls.push(args); return result; }), result);
-  assert.deepEqual(calls, [["quota-axi", ["--json"], {}]]);
+  assert.deepEqual(calls, [["quota-axi", ["--json", "--allow-keychain-prompt"], {}]]);
 });
 
 test("spawn failure uses the fixed npm shim command and preserves the target machine", async () => {
@@ -18,8 +18,8 @@ test("spawn failure uses the fixed npm shim command and preserves the target mac
   }, options);
   assert.equal(actual, result);
   assert.deepEqual(calls, [
-    ["quota-axi", ["--json"], options],
-    ["cmd.exe", ["/d", "/s", "/c", "quota-axi --json"], options],
+    ["quota-axi", ["--json", "--allow-keychain-prompt"], options],
+    ["cmd.exe", ["/d", "/s", "/c", "quota-axi --json --allow-keychain-prompt"], options],
   ]);
 });
 

@@ -2,11 +2,11 @@
 // Keep exec injectable so the fallback and machine forwarding can be checked without Herdr.
 export async function runQuotaCommand(exec, options = {}) {
   try {
-    return await exec("quota-axi", ["--json"], options);
+    return await exec("quota-axi", ["--json", "--allow-keychain-prompt"], options);
   } catch (startError) {
     try {
       // Fixed command only: never interpolate paths, credentials or caller arguments into cmd.
-      return await exec("cmd.exe", ["/d", "/s", "/c", "quota-axi --json"], options);
+      return await exec("cmd.exe", ["/d", "/s", "/c", "quota-axi --json --allow-keychain-prompt"], options);
     } catch {
       // On Unix, let the existing login-shell fallback handle PATH discovery.
       throw startError;

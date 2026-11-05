@@ -76,7 +76,7 @@ function bar(w, width, height, now, t) {
 async function load() {
   let r = await runQuotaCommand(exec).catch(e => ({ code: -1, stderr: String(e) }));
   // Apps started from the Dock miss PATH entries set in the shell's rc file (npm, nvm, mise): ask the person's own shell.
-  if (r.code !== 0) r = await exec("sh", ["-c", 'exec "${SHELL:-/bin/sh}" -lic "quota-axi --json" </dev/null']).catch(e => ({ code: -1, stderr: String(e) }));
+  if (r.code !== 0) r = await exec("sh", ["-c", 'exec "${SHELL:-/bin/sh}" -lic "quota-axi --json --allow-keychain-prompt" </dev/null']).catch(e => ({ code: -1, stderr: String(e) }));
   if (r.code !== 0) throw new Error(`quota-axi failed: ${(r.stderr || "").trim().split("\n").pop() || `exit ${r.code}`}`);
   // An interactive shell can print a banner first; the report starts at the first brace.
   const data = JSON.parse(r.stdout.slice(r.stdout.indexOf("{")));
